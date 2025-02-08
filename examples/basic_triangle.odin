@@ -37,7 +37,6 @@ init_basic_triangle :: proc() -> bool {
 	}
 
 	color_target_descriptions := [1]sdl.GPUColorTargetDescription{{format = sdl.GetGPUSwapchainTextureFormat(ctx.device, ctx.window)}}
-
 	pipeline_create_info := sdl.GPUGraphicsPipelineCreateInfo {
 		target_info = sdl.GPUGraphicsPipelineTargetInfo {
 			num_color_targets = u32(len(color_target_descriptions)),

@@ -6,6 +6,7 @@ import sdl "vendor:sdl3"
 
 
 init_quad :: proc() -> bool {
+
 	if !sdl.Init({.VIDEO}) {
 		log.errorf("unable to initialize sdl, error: %s", sdl.GetError())
 		return false
@@ -46,7 +47,7 @@ init_quad :: proc() -> bool {
 	}
 
 	vertex_buffer_descriptions := [1]sdl.GPUVertexBufferDescription {
-		{slot = 0, input_rate = .VERTEX, instance_step_rate = 0, pitch = size_of(Vertex)},
+		{slot = 0, input_rate = .VERTEX, instance_step_rate = 0, pitch = size_of(PositionColorVertex)},
 	}
 
 	pipeline_create_info := sdl.GPUGraphicsPipelineCreateInfo {
@@ -78,7 +79,7 @@ init_quad :: proc() -> bool {
 
 	sdl.ShowWindow(ctx.window)
 
-	vertices := []Vertex {
+	vertices := []PositionColorVertex {
 		{position = {-0.5, -0.5, 0}, color = {0, 0, 255, 255}},
 		{position = {0.5, -0.5, 0}, color = {255, 0, 0, 255}},
 		{position = {0.5, 0.5, 0}, color = {255, 0, 0, 255}},
@@ -86,7 +87,7 @@ init_quad :: proc() -> bool {
 	}
 	indices := []u16{0, 1, 2, 0, 2, 3}
 
-	vbuffer_size := size_of(Vertex) * len(vertices)
+	vbuffer_size := size_of(PositionColorVertex) * len(vertices)
 	ibuffer_size := size_of(u16) * len(indices)
 
 	ctx.vertex_buffer = sdl.CreateGPUBuffer(ctx.device, sdl.GPUBufferCreateInfo{usage = {.VERTEX}, size = u32(vbuffer_size)})

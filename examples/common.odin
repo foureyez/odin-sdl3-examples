@@ -13,14 +13,21 @@ scissor_rect := sdl.Rect{320, 240, 320, 240}
 SDLContext :: struct {
 	vertex_buffer:     ^sdl.GPUBuffer,
 	index_buffer:      ^sdl.GPUBuffer,
+	texture:           ^sdl.GPUTexture,
+	sampler:           ^sdl.GPUSampler,
 	window:            ^sdl.Window,
 	device:            ^sdl.GPUDevice,
 	graphics_pipeline: ^sdl.GPUGraphicsPipeline,
 }
 
-Vertex :: struct {
+PositionColorVertex :: struct {
 	position: [3]f32,
 	color:    [4]u8,
+}
+
+PositionTextureVertex :: struct {
+	position: [3]f32,
+	uv:       [2]f32,
 }
 
 load_shader :: proc(
@@ -93,7 +100,22 @@ load_image :: proc(image_filename: string, desired_channels: int) -> ^sdl.Surfac
 
 	result := sdl.LoadBMP(fullpath)
 	if result == nil {
-
+		log.errorf("unable to load image: %s, err: %s", fullpath, sdl.GetError())
+		return nil
 	}
-	return nil
+
+	if desired_channels == 4 {
+		format = .ABGR8888
+	} else {
+		log.errorf("unexpected desired channels: %s", desired_channels)
+		sdl.DestroySurface(result)
+		return nil
+	}
+
+	if result.format != format {
+		next := sdl.ConvertSurface(result, format)
+		sdl.DestroySurface(result)
+		result = next
+	}
+	return result
 }
