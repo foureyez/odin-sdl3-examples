@@ -1,12 +1,10 @@
 package main
 
-import "basic"
-import "buffered"
 import "core:fmt"
 import "core:log"
 import "core:mem"
 import "core:os"
-import "texture"
+import "examples"
 
 
 main :: proc() {
@@ -26,17 +24,17 @@ main :: proc() {
 
 	switch type {
 	case "basic":
-		basic.init()
-		basic.update()
-		basic.destroy()
+		examples.init_basic_triangle()
+		examples.update_basic_triangle()
+		examples.destroy_basic_triangle()
 	case "buffered":
-		buffered.init()
-		buffered.update()
-		buffered.destroy()
+		examples.init_quad()
+		examples.update_quad()
+		examples.destroy_quad()
 	case "texture":
-		texture.init()
-		texture.update()
-		texture.destroy()
+		examples.init_textured_quad()
+		examples.update_textured_quad()
+		examples.destroy_textured_quad()
 	}
 }
 

@@ -1,10 +1,27 @@
-package common
+package examples
 
 import "core:fmt"
 import "core:log"
 import os "core:os/os2"
 import "core:strings"
 import sdl "vendor:sdl3"
+
+ctx: SDLContext
+viewport := sdl.GPUViewport{0, 0, 640, 480, 0.1, 1.0}
+scissor_rect := sdl.Rect{320, 240, 320, 240}
+
+SDLContext :: struct {
+	vertex_buffer:     ^sdl.GPUBuffer,
+	index_buffer:      ^sdl.GPUBuffer,
+	window:            ^sdl.Window,
+	device:            ^sdl.GPUDevice,
+	graphics_pipeline: ^sdl.GPUGraphicsPipeline,
+}
+
+Vertex :: struct {
+	position: [3]f32,
+	color:    [4]u8,
+}
 
 load_shader :: proc(
 	device: ^sdl.GPUDevice,
@@ -68,4 +85,15 @@ load_shader :: proc(
 		log.errorf("unable to create gpu shader, error: %s", sdl.GetError())
 	}
 	return gpu_shader
+}
+
+load_image :: proc(image_filename: string, desired_channels: int) -> ^sdl.Surface {
+	fullpath := fmt.ctprintf("Content/Images/%s", image_filename)
+	format: sdl.PixelFormat
+
+	result := sdl.LoadBMP(fullpath)
+	if result == nil {
+
+	}
+	return nil
 }

@@ -1,20 +1,9 @@
-package basic
+package examples
 
-import "../common"
 import "core:log"
 import sdl "vendor:sdl3"
 
-ctx: SDLContext
-viewport := sdl.GPUViewport{0, 0, 640, 480, 0.1, 1.0}
-scissor_rect := sdl.Rect{320, 240, 320, 240}
-
-SDLContext :: struct {
-	window:            ^sdl.Window,
-	device:            ^sdl.GPUDevice,
-	graphics_pipeline: ^sdl.GPUGraphicsPipeline,
-}
-
-init :: proc() -> bool {
+init_basic_triangle :: proc() -> bool {
 	if !sdl.Init({.VIDEO}) {
 		log.errorf("unable to initialize sdl, error: %s", sdl.GetError())
 		return false
@@ -37,16 +26,12 @@ init :: proc() -> bool {
 		return false
 	}
 
-	return create_graphics_pipeline()
-}
-
-create_graphics_pipeline :: proc() -> bool {
-	vert_shader := common.load_shader(ctx.device, "RawTriangle.vert", 0, 0, 0, 0)
+	vert_shader := load_shader(ctx.device, "RawTriangle.vert", 0, 0, 0, 0)
 	if vert_shader == nil {
 		return false
 	}
 
-	frag_shader := common.load_shader(ctx.device, "SolidColor.frag", 0, 0, 0, 0)
+	frag_shader := load_shader(ctx.device, "SolidColor.frag", 0, 0, 0, 0)
 	if frag_shader == nil {
 		return false
 	}
@@ -75,7 +60,7 @@ create_graphics_pipeline :: proc() -> bool {
 	return true
 }
 
-update :: proc() {
+update_basic_triangle :: proc() {
 	is_running := true
 	event: sdl.Event
 
@@ -86,42 +71,39 @@ update :: proc() {
 				is_running = false
 			}
 		}
-		draw()
-	}
-}
 
-draw :: proc() {
-	command_buffer := sdl.AcquireGPUCommandBuffer(ctx.device)
-	if command_buffer == nil {
-		log.errorf("unable to acquire command buffer: %s", sdl.GetError())
-		return
-	}
-
-	swapchain_texture: ^sdl.GPUTexture
-	if sdl.WaitAndAcquireGPUSwapchainTexture(command_buffer, ctx.window, &swapchain_texture, nil, nil) {
-		color_target_info := sdl.GPUColorTargetInfo {
-			texture     = swapchain_texture,
-			clear_color = sdl.FColor{1, 1, 1, 1},
-			load_op     = .CLEAR,
-			store_op    = .STORE,
+		command_buffer := sdl.AcquireGPUCommandBuffer(ctx.device)
+		if command_buffer == nil {
+			log.errorf("unable to acquire command buffer: %s", sdl.GetError())
+			return
 		}
 
-		render_pass := sdl.BeginGPURenderPass(command_buffer, &color_target_info, 1, nil)
-		sdl.BindGPUGraphicsPipeline(render_pass, ctx.graphics_pipeline)
-		// sdl.SetGPUViewport(render_pass, viewport)
-		// sdl.SetGPUScissor(render_pass, scissor_rect)
+		swapchain_texture: ^sdl.GPUTexture
+		if sdl.WaitAndAcquireGPUSwapchainTexture(command_buffer, ctx.window, &swapchain_texture, nil, nil) {
+			color_target_info := sdl.GPUColorTargetInfo {
+				texture     = swapchain_texture,
+				clear_color = sdl.FColor{1, 1, 1, 1},
+				load_op     = .CLEAR,
+				store_op    = .STORE,
+			}
 
-		sdl.DrawGPUPrimitives(render_pass, 3, 100, 0, 0)
-		sdl.EndGPURenderPass(render_pass)
-	}
+			render_pass := sdl.BeginGPURenderPass(command_buffer, &color_target_info, 1, nil)
+			sdl.BindGPUGraphicsPipeline(render_pass, ctx.graphics_pipeline)
+			// sdl.SetGPUViewport(render_pass, viewport)
+			// sdl.SetGPUScissor(render_pass, scissor_rect)
 
-	if !sdl.SubmitGPUCommandBuffer(command_buffer) {
-		log.errorf("unable to submit command buffer: %s", sdl.GetError())
-		return
+			sdl.DrawGPUPrimitives(render_pass, 3, 100, 0, 0)
+			sdl.EndGPURenderPass(render_pass)
+		}
+
+		if !sdl.SubmitGPUCommandBuffer(command_buffer) {
+			log.errorf("unable to submit command buffer: %s", sdl.GetError())
+			return
+		}
 	}
 }
 
-destroy :: proc() {
+destroy_basic_triangle :: proc() {
 	if ctx.window != nil {
 		sdl.DestroyWindow(ctx.window)
 	}

@@ -1,18 +1,18 @@
 build:
-	odin build . -collection:deps=deps  
+	odin build .   
 
 build-debug:
-	odin build . -collection:deps=deps -debug
+	odin build . -debug
 
 build-release:
-	odin build . -collection:deps=deps -o:aggressive
+	odin build . -o:aggressive
 
 check:
 	odin strip-semicolon . -collection:deps=deps 
-	odin check . -collection:deps=deps -collection:engine=engine
+	odin check . -collection:engine=engine
 
 doc:
-	odin doc . -collection:deps=deps 
+	odin doc . 
 
 run:
-	odin run . -collection:deps=deps 
+	odin run .
