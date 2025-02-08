@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DanielGavin/ols/master/misc/odinfmt.schema.json",
+  "character_width": 150,
+  "enable_hover": true,
+  "enable_snippets": true,
+  "enable_document_symbols": true,
+  "enable_inlay_hints": true,
+  "enable_references": true,
+  "enable_rename": true,
+  "enable_semantic_tokens": true,
+  "enable_format": true
+}
