@@ -8,7 +8,7 @@ import "examples"
 
 
 main :: proc() {
-	type := "texture"
+	type := "clear"
 	if len(os.args) > 1 {
 		type = os.args[1]
 	}
@@ -23,6 +23,10 @@ main :: proc() {
 	defer reset_tracking_allocator()
 
 	switch type {
+	case "clear":
+		examples.init_clear_screen()
+		examples.update_clear_screen()
+		examples.destroy_clear_screen()
 	case "basic":
 		examples.init_basic_triangle()
 		examples.update_basic_triangle()

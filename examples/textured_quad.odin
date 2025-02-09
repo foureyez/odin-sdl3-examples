@@ -94,9 +94,9 @@ init_textured_quad :: proc() -> bool {
 
 	vertices := []PositionTextureVertex {
 		{position = {-0.5, 0.5, 0}, uv = {0, 0}},
-		{position = {0.5, 0.5, 0}, uv = {4, 0}},
-		{position = {0.5, -0.5, 0}, uv = {4, 4}},
-		{position = {-0.5, -0.5, 0}, uv = {0, 4}},
+		{position = {0.5, 0.5, 0}, uv = {1, 0}},
+		{position = {0.5, -0.5, 0}, uv = {1, 1}},
+		{position = {-0.5, -0.5, 0}, uv = {0, 1}},
 	}
 	indices := []u16{0, 1, 2, 0, 2, 3}
 
@@ -213,7 +213,7 @@ update_textured_quad :: proc() {
 			sdl.BindGPUVertexBuffers(render_pass, 0, raw_data(vertex_bindings), u32(len(vertex_bindings)))
 			sdl.BindGPUIndexBuffer(render_pass, sdl.GPUBufferBinding{buffer = ctx.index_buffer}, ._16BIT)
 			sampler_bindings := []sdl.GPUTextureSamplerBinding{{texture = ctx.texture, sampler = ctx.sampler}}
-			sdl.BindGPUFragmentSamplers(render_pass, 0, raw_data(sampler_bindings), 1)
+			sdl.BindGPUFragmentSamplers(render_pass, 0, raw_data(sampler_bindings), u32(len(sampler_bindings)))
 
 			sdl.DrawGPUIndexedPrimitives(render_pass, 6, 1, 0, 0, 0)
 			sdl.EndGPURenderPass(render_pass)
