@@ -3,29 +3,9 @@ package examples
 import "core:log"
 import sdl "vendor:sdl3"
 
-init_basic_triangle :: proc() -> bool {
-	if !sdl.Init({.VIDEO}) {
-		log.errorf("unable to initialize sdl, error: %s", sdl.GetError())
-		return false
-	}
-
-	ctx.device = sdl.CreateGPUDevice({.SPIRV, .DXIL, .MSL}, false, nil) // Pass nil for sdl to auto select the correct device type (vulkan, metal, d12) 
-	if ctx.device == nil {
-		log.errorf("unable to initialize gpu device, error: %s", sdl.GetError())
-		return false
-	}
-
-	ctx.window = sdl.CreateWindow("sdl demo", 640, 480, {.RESIZABLE})
-	if ctx.window == nil {
-		log.errorf("unable to initialize window, error: %s", sdl.GetError())
-		return false
-	}
-
-	if !sdl.ClaimWindowForGPUDevice(ctx.device, ctx.window) {
-		log.errorf("unable to claim window for gpu device, error: %s", sdl.GetError())
-		return false
-	}
-
+init_basic_triangle :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) -> bool {
+	ctx.window = window
+	ctx.device = device
 	vert_shader := load_shader(ctx.device, "RawTriangle.vert", 0, 0, 0, 0)
 	if vert_shader == nil {
 		return false
