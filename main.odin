@@ -7,16 +7,17 @@ import "core:os"
 import "examples"
 import sdl "vendor:sdl3"
 
+Example :: enum {
+  Clear,
+  Triangle,
+  Quad,
+  TexturedQuad,
+  BatchedQuad
+}
 
 main :: proc() {
-	type := "batchedquad"
-	if len(os.args) > 1 {
-		type = os.args[1]
-	}
-
 	cl := log.create_console_logger()
 	context.logger = cl
-	log.infof("Type: %s", type)
 
 	tracking_allocator: mem.Tracking_Allocator
 	mem.tracking_allocator_init(&tracking_allocator, context.allocator)
@@ -42,21 +43,22 @@ main :: proc() {
 	}
 
 	examples.init(window, device)
+  example_type := Example.Clear
 
-	switch type {
-	case "clear":
+	switch example_type {
+	case .Clear:
 		examples.clear_screen()
 		examples.destroy_clear_screen()
-	case "basic":
+	case .Triangle:
 		examples.basic_triangle()
 		examples.destroy_basic_triangle()
-	case "quad":
+	case .Quad:
 		examples.quad()
 		examples.destroy_quad()
-	case "texturedquad":
+	case .TexturedQuad:
 		examples.textured_quad()
 		examples.destroy_textured_quad()
-	case "batchedquad":
+	case .BatchedQuad:
 		examples.batched_quad()
 		examples.destroy_batched_quad()
 	}
