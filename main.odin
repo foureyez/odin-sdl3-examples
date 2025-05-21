@@ -9,7 +9,7 @@ import sdl "vendor:sdl3"
 
 
 main :: proc() {
-	type := "basic"
+	type := "batchedquad"
 	if len(os.args) > 1 {
 		type = os.args[1]
 	}
@@ -41,23 +41,24 @@ main :: proc() {
 		log.fatalf("unable to claim window for gpu device, error: %s", sdl.GetError())
 	}
 
+	examples.init(window, device)
+
 	switch type {
 	case "clear":
-		examples.init_clear_screen(window, device)
-		examples.update_clear_screen()
+		examples.clear_screen()
 		examples.destroy_clear_screen()
 	case "basic":
-		examples.init_basic_triangle(window, device)
-		examples.update_basic_triangle()
+		examples.basic_triangle()
 		examples.destroy_basic_triangle()
-	case "buffered":
-		examples.init_quad(window, device)
-		examples.update_quad()
+	case "quad":
+		examples.quad()
 		examples.destroy_quad()
-	case "texture":
-		examples.init_textured_quad(window, device)
-		examples.update_textured_quad()
+	case "texturedquad":
+		examples.textured_quad()
 		examples.destroy_textured_quad()
+	case "batchedquad":
+		examples.batched_quad()
+		examples.destroy_batched_quad()
 	}
 }
 

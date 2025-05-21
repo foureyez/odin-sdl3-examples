@@ -3,13 +3,7 @@ package examples
 import "core:log"
 import sdl "vendor:sdl3"
 
-init_clear_screen :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) -> bool {
-	ctx.window = window
-	ctx.device = device
-	return true
-}
-
-update_clear_screen :: proc() {
+clear_screen :: proc() {
 	is_running := true
 	event: sdl.Event
 

@@ -3,18 +3,12 @@ package examples
 import "core:log"
 import sdl "vendor:sdl3"
 
-init_basic_triangle :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) -> bool {
-	ctx.window = window
-	ctx.device = device
+basic_triangle :: proc() {
 	vert_shader := load_shader(ctx.device, "RawTriangle.vert", 0, 0, 0, 0)
-	if vert_shader == nil {
-		return false
-	}
+	assert(vert_shader != nil)
 
 	frag_shader := load_shader(ctx.device, "SolidColor.frag", 0, 0, 0, 0)
-	if frag_shader == nil {
-		return false
-	}
+	assert(frag_shader != nil)
 
 	color_target_descriptions := [1]sdl.GPUColorTargetDescription{{format = sdl.GetGPUSwapchainTextureFormat(ctx.device, ctx.window)}}
 	pipeline_create_info := sdl.GPUGraphicsPipelineCreateInfo {
@@ -31,15 +25,12 @@ init_basic_triangle :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) -> bool
 	ctx.graphics_pipeline = sdl.CreateGPUGraphicsPipeline(ctx.device, pipeline_create_info)
 	if ctx.graphics_pipeline == nil {
 		log.errorf("unable to create graphics pipeline, error: %s", sdl.GetError())
-		return false
+		return
 	}
 
 	sdl.ReleaseGPUShader(ctx.device, vert_shader)
 	sdl.ReleaseGPUShader(ctx.device, frag_shader)
-	return true
-}
 
-update_basic_triangle :: proc() {
 	is_running := true
 	event: sdl.Event
 

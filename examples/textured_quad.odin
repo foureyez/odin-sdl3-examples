@@ -4,24 +4,17 @@ import "core:log"
 import "core:mem"
 import sdl "vendor:sdl3"
 
-init_textured_quad :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) -> bool {
-	ctx.window = window
-	ctx.device = device
+
+textured_quad :: proc() {
 	vert_shader := load_shader(ctx.device, "TexturedQuad.vert", 0, 0, 0, 0)
-	if vert_shader == nil {
-		return false
-	}
+	assert(vert_shader != nil)
 
 	frag_shader := load_shader(ctx.device, "TexturedQuad.frag", 1, 0, 0, 0)
-	if frag_shader == nil {
-		return false
-	}
+	assert(frag_shader != nil)
 
 	// Load the image
 	image_data := load_image("ravioli.bmp", 4)
-	if (image_data == nil) {
-		return false
-	}
+	assert(image_data != nil)
 
 	color_target_descriptions := [1]sdl.GPUColorTargetDescription{{format = sdl.GetGPUSwapchainTextureFormat(ctx.device, ctx.window)}}
 
@@ -54,7 +47,7 @@ init_textured_quad :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) -> bool 
 	ctx.graphics_pipeline = sdl.CreateGPUGraphicsPipeline(ctx.device, pipeline_create_info)
 	if ctx.graphics_pipeline == nil {
 		log.errorf("unable to create graphics pipeline, error: %s", sdl.GetError())
-		return false
+		return
 	}
 
 	sdl.ReleaseGPUShader(ctx.device, vert_shader)
@@ -150,15 +143,12 @@ init_textured_quad :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) -> bool 
 	sdl.EndGPUCopyPass(copy_pass)
 	if !sdl.SubmitGPUCommandBuffer(upload_command_buffer) {
 		log.errorf("unable to copy from transfer to vertex buffer, err: %s", sdl.GetError())
-		return false
+		return
 	}
+
 	sdl.DestroySurface(image_data)
 	sdl.ShowWindow(ctx.window)
-	return true
-}
 
-
-update_textured_quad :: proc() {
 	is_running := true
 	event: sdl.Event
 

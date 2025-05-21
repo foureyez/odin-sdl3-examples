@@ -28,7 +28,45 @@ PositionColorVertex :: struct {
 PositionTextureVertex :: struct {
 	position: [3]f32,
 	uv:       [2]f32,
+	tex_id:   u8,
 }
+
+
+init :: proc(window: ^sdl.Window, device: ^sdl.GPUDevice) {
+	ctx.window = window
+	ctx.device = device
+}
+
+// compile_and_load_shader :: proc(
+// 	device: ^sdl.GPUDevice,
+// 	shader_filename: string,
+// 	sampler_count: u32,
+// 	uniform_buffer_count: u32,
+// 	storage_buffer_count: u32,
+// 	storage_texture_count: u32,
+// ) -> ^sdl.GPUShader {
+// 	full_path := fmt.tprintf("./assets/shaders/%s", shader_filename)
+// 	code, err := os.read_entire_file(full_path, context.temp_allocator)
+// 	if err != nil {
+// 		log.errorf("unable to open shader file: %s", full_path)
+// 		return nil
+// 	}
+//
+// 	stage: shadercross.ShaderStage
+// 	switch {
+// 	case strings.contains(shader_filename, ".vert"):
+// 		stage = .VERTEX
+// 	case strings.contains(shader_filename, ".frag"):
+// 		stage = .FRAGMENT
+// 	case:
+// 		return nil
+// 	}
+//
+// 	shader_code := strings.clone_to_cstring(strings.clone_from_bytes(code))
+// 	info := &shadercross.HLSLInfo{source = shader_code, entrypoint = "main", shader_stage = stage}
+// 	metadata := &shadercross.GraphicsShaderMetadata{}
+// 	return shadercross.CompileGraphicsShaderFromHLSL(device, info, metadata)
+// }
 
 load_shader :: proc(
 	device: ^sdl.GPUDevice,
@@ -56,15 +94,15 @@ load_shader :: proc(
 	backend_formats := sdl.GetGPUShaderFormats(device)
 	switch {
 	case .SPIRV in backend_formats:
-		full_path = fmt.tprintf("./Content/Shaders/Compiled/SPIRV/%s.spv", shader_filename)
+		full_path = fmt.tprintf("./assets/shaders/compiled/%s.spv", shader_filename)
 		entrypoint = "main"
 		format = {.SPIRV}
 	case .MSL in backend_formats:
-		full_path = fmt.tprintf("./Content/Shaders/Compiled/SPIRV/%s.msl", shader_filename)
+		full_path = fmt.tprintf("./assets/shaders/compiled/%s.msl", shader_filename)
 		entrypoint = "main"
 		format = {.MSL}
 	case .DXIL in backend_formats:
-		full_path = fmt.tprintf("./Content/Shaders/Compiled/SPIRV/%s.dxil", shader_filename)
+		full_path = fmt.tprintf("./assets/shaders/compiled/%s.dxil", shader_filename)
 		entrypoint = "main"
 		format = {.DXIL}
 	}
@@ -91,11 +129,12 @@ load_shader :: proc(
 	if gpu_shader == nil {
 		log.errorf("unable to create gpu shader, error: %s", sdl.GetError())
 	}
+
 	return gpu_shader
 }
 
 load_image :: proc(image_filename: string, desired_channels: int) -> ^sdl.Surface {
-	fullpath := fmt.ctprintf("Content/Images/%s", image_filename)
+	fullpath := fmt.ctprintf("assets/images/%s", image_filename)
 	format: sdl.PixelFormat
 
 	result := sdl.LoadBMP(fullpath)
