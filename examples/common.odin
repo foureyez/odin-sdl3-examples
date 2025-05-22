@@ -99,7 +99,7 @@ load_shader :: proc(
 		format = {.SPIRV}
 	case .MSL in backend_formats:
 		full_path = fmt.tprintf("./assets/shaders/compiled/%s.msl", shader_filename)
-		entrypoint = "main"
+		entrypoint = "main0"
 		format = {.MSL}
 	case .DXIL in backend_formats:
 		full_path = fmt.tprintf("./assets/shaders/compiled/%s.dxil", shader_filename)
