@@ -8,11 +8,11 @@ import "examples"
 import sdl "vendor:sdl3"
 
 Example :: enum {
-  Clear,
-  Triangle,
-  Quad,
-  TexturedQuad,
-  BatchedQuad
+	Clear,
+	Triangle,
+	Quad,
+	TexturedQuad,
+	BatchedQuad,
 }
 
 main :: proc() {
@@ -43,7 +43,7 @@ main :: proc() {
 	}
 
 	examples.init(window, device)
-  example_type := Example.Clear
+	example_type := Example.Triangle
 
 	switch example_type {
 	case .Clear:

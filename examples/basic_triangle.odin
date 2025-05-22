@@ -4,10 +4,10 @@ import "core:log"
 import sdl "vendor:sdl3"
 
 basic_triangle :: proc() {
-	vert_shader := load_shader(ctx.device, "RawTriangle.vert", 0, 0, 0, 0)
+	vert_shader := load_shader(ctx.device, "triangle.vert", 0, 0, 0, 0)
 	assert(vert_shader != nil)
 
-	frag_shader := load_shader(ctx.device, "SolidColor.frag", 0, 0, 0, 0)
+	frag_shader := load_shader(ctx.device, "triangle.frag", 0, 0, 0, 0)
 	assert(frag_shader != nil)
 
 	color_target_descriptions := [1]sdl.GPUColorTargetDescription{{format = sdl.GetGPUSwapchainTextureFormat(ctx.device, ctx.window)}}
@@ -62,7 +62,7 @@ basic_triangle :: proc() {
 			// sdl.SetGPUViewport(render_pass, viewport)
 			// sdl.SetGPUScissor(render_pass, scissor_rect)
 
-			sdl.DrawGPUPrimitives(render_pass, 3, 100, 0, 0)
+			sdl.DrawGPUPrimitives(render_pass, 3, 1, 0, 0)
 			sdl.EndGPURenderPass(render_pass)
 		}
 
