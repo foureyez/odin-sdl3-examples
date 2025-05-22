@@ -6,10 +6,10 @@ import sdl "vendor:sdl3"
 
 
 textured_quad :: proc() {
-	vert_shader := load_shader(ctx.device, "TexturedQuad.vert", 0, 0, 0, 0)
+	vert_shader := load_shader(ctx.device, "texturedquad.vert", 0, 0, 0, 0)
 	assert(vert_shader != nil)
 
-	frag_shader := load_shader(ctx.device, "TexturedQuad.frag", 1, 0, 0, 0)
+	frag_shader := load_shader(ctx.device, "texturedquad.frag", 1, 0, 0, 0)
 	assert(frag_shader != nil)
 
 	// Load the image
@@ -71,15 +71,16 @@ textured_quad :: proc() {
 		{position = {0.5, -0.5, 0}, uv = {1, 1}},
 		{position = {-0.5, -0.5, 0}, uv = {0, 1}},
 	}
-	indices := []u16{0, 1, 2, 0, 2, 3}
-
 	vbuffer_size := size_of(PositionTextureVertex) * len(vertices)
-	ibuffer_size := size_of(u16) * len(indices)
-	tex_size: int = int(image_data.w) * int(image_data.h) * 4
 	ctx.vertex_buffer = sdl.CreateGPUBuffer(ctx.device, sdl.GPUBufferCreateInfo{usage = {.VERTEX}, size = u32(vbuffer_size)})
 	sdl.SetGPUBufferName(ctx.device, ctx.vertex_buffer, "VertexBuffer")
+
+	indices := []u16{0, 1, 2, 0, 2, 3}
+	ibuffer_size := size_of(u16) * len(indices)
 	ctx.index_buffer = sdl.CreateGPUBuffer(ctx.device, sdl.GPUBufferCreateInfo{usage = {.INDEX}, size = u32(ibuffer_size)})
 	sdl.SetGPUBufferName(ctx.device, ctx.index_buffer, "IndexBuffer")
+
+	tex_size: int = int(image_data.w) * int(image_data.h) * 4
 	ctx.texture = sdl.CreateGPUTexture(
 		ctx.device,
 		sdl.GPUTextureCreateInfo {
@@ -99,24 +100,27 @@ textured_quad :: proc() {
 		ctx.device,
 		sdl.GPUTransferBufferCreateInfo{usage = .UPLOAD, size = u32(vbuffer_size + ibuffer_size)},
 	)
-	texture_transfer_buffer := sdl.CreateGPUTransferBuffer(ctx.device, sdl.GPUTransferBufferCreateInfo{usage = .UPLOAD, size = u32(tex_size)})
-	defer sdl.ReleaseGPUTransferBuffer(ctx.device, buffer_transfer_buffer)
-	defer sdl.ReleaseGPUTransferBuffer(ctx.device, texture_transfer_buffer)
 
+	// Copy vertices to transfer buffer
 	buffer_transfer_ptr := sdl.MapGPUTransferBuffer(ctx.device, buffer_transfer_buffer, false) // Get mapped pointer to the transfer buffer
-	mem.copy(buffer_transfer_ptr, raw_data(vertices), vbuffer_size) // Copy vertices to transfer buffer using the mapped pointer
+	mem.copy(buffer_transfer_ptr, raw_data(vertices), vbuffer_size)
+
+	// Copy indices to transfer buffer
 	index_buffer_transfer_ptr := mem.ptr_offset(cast(^u8)buffer_transfer_ptr, vbuffer_size) // Offset the mapped pointer by size of vertex buffer size
-	mem.copy(index_buffer_transfer_ptr, raw_data(indices), ibuffer_size) // Copy indices to transfer buffer using the mapped pointer
+	mem.copy(index_buffer_transfer_ptr, raw_data(indices), ibuffer_size)
 
 	sdl.UnmapGPUTransferBuffer(ctx.device, buffer_transfer_buffer) // Unmap transfer bufffer
 
+	// Copy image to texture transfer buffer
+	texture_transfer_buffer := sdl.CreateGPUTransferBuffer(ctx.device, sdl.GPUTransferBufferCreateInfo{usage = .UPLOAD, size = u32(tex_size)})
 	texture_transfer_ptr := sdl.MapGPUTransferBuffer(ctx.device, texture_transfer_buffer, false) // Get mapped pointer to the transfer buffer
 	mem.copy(texture_transfer_ptr, image_data.pixels, tex_size)
 
-	//Upload data from transfer buffer to vertex buffer
+
+	// Upload the data from transfer buffers to the gpu buffers 
 	upload_command_buffer := sdl.AcquireGPUCommandBuffer(ctx.device)
 	copy_pass := sdl.BeginGPUCopyPass(upload_command_buffer)
-	// Copy vertex info
+
 	sdl.UploadToGPUBuffer(
 		copy_pass,
 		sdl.GPUTransferBufferLocation{transfer_buffer = buffer_transfer_buffer},
@@ -124,7 +128,6 @@ textured_quad :: proc() {
 		false,
 	)
 
-	// Copy index info
 	sdl.UploadToGPUBuffer(
 		copy_pass,
 		sdl.GPUTransferBufferLocation{transfer_buffer = buffer_transfer_buffer, offset = u32(vbuffer_size)},
@@ -132,7 +135,6 @@ textured_quad :: proc() {
 		false,
 	)
 
-	// Copy texture
 	sdl.UploadToGPUTexture(
 		copy_pass,
 		sdl.GPUTextureTransferInfo{transfer_buffer = texture_transfer_buffer},
@@ -148,6 +150,10 @@ textured_quad :: proc() {
 
 	sdl.DestroySurface(image_data)
 	sdl.ShowWindow(ctx.window)
+
+	sdl.ReleaseGPUTransferBuffer(ctx.device, buffer_transfer_buffer)
+	sdl.ReleaseGPUTransferBuffer(ctx.device, texture_transfer_buffer)
+
 
 	is_running := true
 	event: sdl.Event

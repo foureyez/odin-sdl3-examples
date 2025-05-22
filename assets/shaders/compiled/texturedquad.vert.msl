@@ -5,21 +5,21 @@ using namespace metal;
 
 struct main0_out
 {
-    float4 outcolor [[user(locn0)]];
+    float2 ouv [[user(locn0)]];
     float4 gl_Position [[position]];
 };
 
 struct main0_in
 {
     float3 position [[attribute(0)]];
-    float4 color [[attribute(1)]];
+    float2 uv [[attribute(1)]];
 };
 
 vertex main0_out main0(main0_in in [[stage_in]])
 {
     main0_out out = {};
     out.gl_Position = float4(in.position, 1.0);
-    out.outcolor = in.color;
+    out.ouv = in.uv;
     return out;
 }
 

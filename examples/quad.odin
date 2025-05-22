@@ -6,10 +6,10 @@ import sdl "vendor:sdl3"
 
 
 quad :: proc() {
-	vert_shader := load_shader(ctx.device, "PositionColor.vert", 0, 0, 0, 0)
+	vert_shader := load_shader(ctx.device, "quad.vert", 0, 0, 0, 0)
 	assert(vert_shader != nil)
 
-	frag_shader := load_shader(ctx.device, "SolidColor.frag", 0, 0, 0, 0)
+	frag_shader := load_shader(ctx.device, "quad.frag", 0, 0, 0, 0)
 	assert(frag_shader != nil)
 
 	color_target_descriptions := [1]sdl.GPUColorTargetDescription{{format = sdl.GetGPUSwapchainTextureFormat(ctx.device, ctx.window)}}
@@ -72,7 +72,6 @@ quad :: proc() {
 		ctx.device,
 		sdl.GPUTransferBufferCreateInfo{usage = .UPLOAD, size = u32(vbuffer_size + ibuffer_size)},
 	)
-	defer sdl.ReleaseGPUTransferBuffer(ctx.device, transfer_buffer)
 
 	transfer_buffer_ptr := sdl.MapGPUTransferBuffer(ctx.device, transfer_buffer, false) // Get mapped pointer to the transfer buffer
 	mem.copy(transfer_buffer_ptr, raw_data(vertices), vbuffer_size) // Copy vertices to transfer buffer using the mapped pointer
@@ -105,6 +104,9 @@ quad :: proc() {
 		log.errorf("unable to copy from transfer to vertex buffer, err: %s", sdl.GetError())
 		return
 	}
+
+	// Release the transfer buffer 
+	sdl.ReleaseGPUTransferBuffer(ctx.device, transfer_buffer)
 
 	is_running := true
 	event: sdl.Event
@@ -146,7 +148,6 @@ quad :: proc() {
 
 		if !sdl.SubmitGPUCommandBuffer(command_buffer) {
 			log.errorf("unable to submit command buffer: %s", sdl.GetError())
-			return
 		}
 	}
 }

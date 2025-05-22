@@ -33,7 +33,7 @@ main :: proc() {
 		log.fatalf("unable to initialize gpu device, error: %s", sdl.GetError())
 	}
 
-	window := sdl.CreateWindow("sdl demo", 640, 480, {.RESIZABLE})
+	window := sdl.CreateWindow("sdl demo", 0, 0, {.RESIZABLE, .MAXIMIZED})
 	if window == nil {
 		log.fatalf("unable to initialize window, error: %s", sdl.GetError())
 	}
@@ -43,7 +43,7 @@ main :: proc() {
 	}
 
 	examples.init(window, device)
-	example_type := Example.Triangle
+	example_type := Example.TexturedQuad
 
 	switch example_type {
 	case .Clear:
