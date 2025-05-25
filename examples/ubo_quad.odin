@@ -99,13 +99,15 @@ ubo_quad :: proc() {
 		mvp: matrix[4, 4]f32,
 	}
 
+	window_size: [2]i32
+	sdl.GetWindowSize(ctx.window, &window_size.x, &window_size.y)
+
 	ROTATION_SPEED :: 90
 	rotation: f32 = 0
 	ubo := UBO{}
-	window_size: [2]i32
-	sdl.GetWindowSize(ctx.window, &window_size.x, &window_size.y)
 	aspect_ratio := f32(window_size.x) / f32(window_size.y)
-	proj_mat := linalg.matrix4_perspective_f32(70, aspect_ratio, 0.00001, 10000)
+	fov := linalg.to_radians(f32(70))
+	proj_mat := linalg.matrix4_perspective_f32(fov, aspect_ratio, 0.00001, 10000)
 
 	last_tick := sdl.GetTicks()
 	for is_running {
@@ -118,7 +120,7 @@ ubo_quad :: proc() {
 				sdl.GetWindowSize(ctx.window, &window_size.x, &window_size.y)
 				aspect_ratio = f32(window_size.x) / f32(window_size.y)
 				log.info(aspect_ratio)
-				proj_mat = linalg.matrix4_perspective_f32(70, aspect_ratio, 0.00001, 10000)
+				proj_mat = linalg.matrix4_perspective_f32(fov, aspect_ratio, 0.00001, 10000)
 			}
 		}
 
@@ -151,7 +153,7 @@ ubo_quad :: proc() {
 			vertex_bindings := []sdl.GPUBufferBinding{{buffer = ctx.vertex_buffer}}
 			sdl.BindGPUVertexBuffers(render_pass, 0, raw_data(vertex_bindings), u32(len(vertex_bindings)))
 			sdl.BindGPUIndexBuffer(render_pass, sdl.GPUBufferBinding{buffer = ctx.index_buffer}, ._16BIT)
-			sdl.DrawGPUIndexedPrimitives(render_pass, 6, 1, 0, 0, 0)
+			sdl.DrawGPUIndexedPrimitives(render_pass, u32(len(indices)), 1, 0, 0, 0)
 			sdl.EndGPURenderPass(render_pass)
 		}
 

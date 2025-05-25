@@ -14,6 +14,7 @@ SDLContext :: struct {
 	vertex_buffer:     ^sdl.GPUBuffer,
 	index_buffer:      ^sdl.GPUBuffer,
 	texture:           ^sdl.GPUTexture,
+	depth_texture:     ^sdl.GPUTexture,
 	sampler:           ^sdl.GPUSampler,
 	window:            ^sdl.Window,
 	device:            ^sdl.GPUDevice,
@@ -28,7 +29,6 @@ PositionColorVertex :: struct {
 PositionTextureVertex :: struct {
 	position: [3]f32,
 	uv:       [2]f32,
-	tex_id:   u8,
 }
 
 
@@ -134,7 +134,7 @@ load_shader :: proc(
 }
 
 load_image :: proc(image_filename: string, desired_channels: int) -> ^sdl.Surface {
-	fullpath := fmt.ctprintf("assets/images/%s", image_filename)
+	fullpath := fmt.ctprintf("assets/textures/%s", image_filename)
 	format: sdl.PixelFormat
 
 	result := sdl.LoadBMP(fullpath)
