@@ -12,7 +12,7 @@ Example :: enum {
 	Triangle,
 	Quad,
 	TexturedQuad,
-	BatchedQuad,
+	UboQuad,
 }
 
 main :: proc() {
@@ -43,7 +43,7 @@ main :: proc() {
 	}
 
 	examples.init(window, device)
-	example_type := Example.TexturedQuad
+	example_type := Example.UboQuad
 
 	switch example_type {
 	case .Clear:
@@ -58,9 +58,9 @@ main :: proc() {
 	case .TexturedQuad:
 		examples.textured_quad()
 		examples.destroy_textured_quad()
-	case .BatchedQuad:
-		examples.batched_quad()
-		examples.destroy_batched_quad()
+	case .UboQuad:
+		examples.ubo_quad()
+		examples.destroy_ubo_quad()
 	}
 }
 

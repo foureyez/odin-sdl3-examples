@@ -6,10 +6,10 @@ import sdl "vendor:sdl3"
 
 
 textured_quad :: proc() {
-	vert_shader := load_shader(ctx.device, "texturedquad.vert", 0, 0, 0, 0)
+	vert_shader := load_shader(ctx.device, "quad.vert", 0, 0, 0, 0)
 	assert(vert_shader != nil)
 
-	frag_shader := load_shader(ctx.device, "texturedquad.frag", 1, 0, 0, 0)
+	frag_shader := load_shader(ctx.device, "quad.frag", 1, 0, 0, 0)
 	assert(frag_shader != nil)
 
 	// Load the image
